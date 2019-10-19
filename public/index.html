@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Toodles - A To Do Tracker</title>
+
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css">
+    <link rel="stylesheet" type="text/css" href="css/toodles.css">
+    <link rel="icon" href="images/favicon.png" />
+  </head>
+
+  <body>
+    <!-- Content -->
+    <div class="container">
+      <div id="application">
+        <toodles-navbar></toodles-navbar>
+        <error-banner></error-banner>
+        <to-do-list :list="list"></to-do-list>
+        <archive-viewer></archive-viewer>
+      </div>
+    </div>
+
+    <!-- Javascript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lockr/0.8.5/lockr.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vuex/3.1.1/vuex.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.8/sjcl.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.js"></script>
+    <script type="text/javascript" src="js/object_with_id.js"></script>
+    <script type="text/javascript" src="js/todo.js"></script>
+    <script type="text/javascript" src="js/filter.js"></script>
+    <script type="text/javascript" src="js/store.js"></script>
+    <script type="text/javascript" src="js/components/error.js"></script>
+    <script type="text/javascript" src="js/components/toodles_navbar.js"></script>
+    <script type="text/javascript" src="js/components/to_do_list.js"></script>
+    <script type="text/javascript" src="js/components/archive_viewer.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        let application = undefined;
+
+        Lockr.prefix = "toodles_";
+        application = new Vue({computed:  {list: function() {
+                                                return(this.$store.getters.toDoItems);
+                                            }},
+                                data:      {},
+                                el:        "#application",
+                                store, 
+                                methods:   {},
+                                mounted:   function() {
+                                              let content = Lockr.get("to_do_items");
+
+                                              console.log("Mount for application called, parsing item list.");
+                                              try {
+                                                  if(content && content.trim() !== "") {
+                                                      let objects = JSON.parse(content);
+                                                      let items   = objects.map(object => ToDo.fromObject(object));
+                                                      this.$store.commit("setToDoItems", items);
+                                                  }
+                                              } catch(error) {
+                                                  console.log("An error occurred parsing the details for the existing to do item list. Cause:", error);
+                                                  this.$store.dispatch("showError", "An error occurred loading the existing list of to do items.");
+                                              }
+
+                                              console.log("Starting error cycler.");
+                                              this.$store.dispatch("cycleError");
+                                          }});
+      });
+    </script>
+  </body>
+</html>

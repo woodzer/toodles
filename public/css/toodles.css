@@ -1,0 +1,35 @@
+.clickable-icon {
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.deleted {
+    color: #ffb3b3;
+}
+
+.error-banner {
+    margin: 10px 0;
+}
+
+.inactive {
+    color: #ccc;
+}
+
+.to-do-list-item {
+    cursor: pointer;
+    padding: 10px;
+}
+
+.to-do-list-item:hover {
+    background-color: #eee;
+}
+
+.to-do-list-item-title {
+}
+
+.two-column-menu {
+    column-gap: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 5px;  
+}
